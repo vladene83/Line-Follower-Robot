@@ -1,0 +1,106 @@
+const int enA = 6;
+const int in1 = A0;
+const int in2 = A1;
+const int in3 = A2;
+const int in4 = A3;
+const int enB = 5;
+
+const int sensorLeft = A4;
+const int sensorCenter = A6;
+const int sensorRight = A5;
+
+// ultrasonic
+const int trigPin = 8;
+const int echoPin = 7;
+
+long duration;
+int distance;
+
+void setup() {
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  Serial.begin(9600);
+
+  pinMode(enA, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(enB, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+
+  pinMode(sensorLeft, INPUT);
+  pinMode(sensorRight, INPUT);
+  pinMode(sensorCenter, INPUT);
+}
+
+void loop() {
+  // dist
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
+
+  Serial.print("Distanta: ");
+  Serial.println(distance);
+
+  if (distance < 30) {
+    stop();
+  } else if (digitalRead(sensorLeft) == LOW && digitalRead(sensorRight) == LOW) {
+    mersDrept();
+  } else if (digitalRead(sensorLeft) == LOW && digitalRead(sensorRight) == HIGH) {
+    virajStanga();
+  } else if (digitalRead(sensorLeft) == HIGH && digitalRead(sensorRight) == LOW) {
+    virajDreapta();
+  } else {
+    stop();
+  }
+
+  delay(50);
+}
+
+
+void stop() {
+  analogWrite(enA, 0);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  
+  analogWrite(enB, 0);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+}
+
+void mersDrept() {
+  analogWrite(enA, 200);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  
+  analogWrite(enB, 200);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+}
+
+void virajStanga() {
+  analogWrite(enA, 200);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  
+  analogWrite(enB, 200);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+}
+
+void virajDreapta() {
+  analogWrite(enA, 200);
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  
+  analogWrite(enB, 200);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+}
